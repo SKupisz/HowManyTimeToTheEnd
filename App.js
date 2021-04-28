@@ -1,9 +1,13 @@
 import React from 'react';
 import { Platform, StatusBar, StyleSheet, Text, SafeAreaView } from 'react-native';
+import {useDimesions, useDeviceOrientation} from "@react-native-community/hooks";
 
 import Main from "./components/Main.js";
 
 export default function App() {
+
+  const {landscape} = useDeviceOrientation();
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -19,19 +23,21 @@ export default function App() {
       marginBottom: 20
     },
     choosingBtn: {
-      width: "60%",
+      width: landscape ? "50%" : "60%",
       padding: 14,
       marginLeft: "auto",
       marginRight: "auto",
       backgroundColor: "dodgerblue",
-      fontSize: 14,
+      fontSize: landscape ? 12 : 14,
       alignItems: "center",
       borderRadius: 10,
-      marginBottom: 4
+      marginBottom: 4,
+      justifyContent: "center"
     },
     choosingBtnText: {
       fontFamily: "monospace",
-      fontSize: 14
+      fontSize: 14,
+      textAlign: "center"
     },
     content: {
       flex: 4,
@@ -40,7 +46,7 @@ export default function App() {
     eventName: {
       marginLeft: "auto",
       marginRight: "auto",
-      width: "80%",
+      width: landscape ? "90%" : "80%",
       fontSize: 21,
       fontFamily: "monospace",
       marginBottom: 7
@@ -54,7 +60,8 @@ export default function App() {
       marginBottom: 11
     },
     timeStamps: {
-      alignItems: "center"
+      alignItems: "center",
+      width: "100%"
     },
     timeDiff: {
       width: "60%",

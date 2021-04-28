@@ -53,11 +53,13 @@ export default class Main extends React.Component{
     render(){
         return <ScrollView>
             <View style = {this.props.styles["main"]}>
-                {this.datesToAnalyze["names"].map((name,ind) => {
+                {this.state.currentDateToCheck === -1 ? this.datesToAnalyze["names"].map((name,ind) => {
                 return <Pressable key = {name} onPress ={() => {this.setNewTime(ind)}} style = {this.props.styles["choosingBtn"]}>
                 <Text style = {this.props.styles["choosingBtnText"]}>{name}</Text>
             </Pressable>;
-                })}
+                }) : <Pressable style = {this.props.styles["choosingBtn"]} onPress = {() => {this.setNewTime(this.state.currentDateToCheck)}}>
+                <Text style = {this.props.styles["choosingBtnText"]}>Menu</Text>
+            </Pressable>}
 
             </View>
             <View style = {this.props.styles["content"]}>
@@ -66,6 +68,7 @@ export default class Main extends React.Component{
                     <View style = {this.props.styles["timeStamps"]}>
                         <Text style = {this.props.styles["eventName"]}>{this.datesToAnalyze["names"][this.state.currentDateToCheck]}</Text>
                         <Text style = {this.props.styles["passedAway"]}>Zostało</Text>
+                    <Text style = {this.props.styles["timeDiff"]}>{Math.floor((this.state.currentTimeLeft)/(1000*60*60*24*7))+" tygodni"}</Text>
                     <Text style = {this.props.styles["timeDiff"]}>{Math.floor((this.state.currentTimeLeft)/(1000*60*60*24))+" dni"}</Text>
                     <Text style = {this.props.styles["timeDiff"]}>{Math.floor((this.state.currentTimeLeft)/(1000*60*60))+" godzin"}</Text>
                     <Text style = {this.props.styles["timeDiff"]}>{Math.floor((this.state.currentTimeLeft)/(1000*60))+" minut"}</Text>
