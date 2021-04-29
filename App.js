@@ -92,6 +92,49 @@ export default function App() {
       fontFamily: "monospace",
       marginTop: 3,
       marginBottom: 5
+    },
+    customizedDates: {
+      width: "80%",
+      marginLeft: "auto",
+      marginRight: "auto",
+      textAlign: "center",
+      fontSize: 19,
+      fontFamily: "monospace",
+      marginBottom: 9
+    },
+    dateNameInput: {
+      width: "70%",
+      marginTop: 2,
+      marginBottom: 9,
+      marginLeft: "auto",
+      marginRight: "auto",
+      borderColor: "darkgreen",
+      borderBottomWidth: 1,
+      padding: 7,
+      fontSize: 14,
+      fontFamily: "monospace"
+    },
+    insertingNewDateMenu: {
+      width: "90%",
+      marginLeft: "auto",
+      marginRight: "auto",
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "center"
+    },
+    insertingDataWrapper: {
+      marginLeft: 4,
+      marginRight: 4
+    },
+    insertingMenuBtn: {
+      width: "40%",
+      padding: 10,
+      backgroundColor: "dodgerblue",
+      borderRadius: 10,
+    },
+    insertingMenuBtnText: {
+      fontFamily: "monospace",
+      fontSize: 14,
     }
   });
   return (

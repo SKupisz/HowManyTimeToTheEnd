@@ -63,7 +63,7 @@ export default class BuiltIn extends React.Component{
             </View>
             <View style = {this.props.styles["content"]}>
                 <Text>
-                    {this.state.currentTimeLeft === -1 ? <Text style = {this.props.styles["passedAway"]}>Już jest</Text>: this.state.currentDateToCheck === -1 ? "" : 
+                    {this.state.currentTimeLeft === -1 ? <Text style = {this.props.styles["passedAway"]}>Już jest</Text>: this.state.currentDateToCheck === -1 ? <Text></Text> : 
                     <View style = {this.props.styles["timeStamps"]}>
                         <Text style = {this.props.styles["eventName"]}>{this.datesToAnalyze["names"][this.state.currentDateToCheck]}</Text>
                         <Text style = {this.props.styles["passedAway"]}>Zostało</Text>
