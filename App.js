@@ -16,6 +16,27 @@ export default function App() {
       justifyContent: 'center',
       paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
     },
+    menuContainer: {
+      width: "90%",
+      marginLeft: "auto",
+      marginRight: "auto",
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 14
+    },
+    menuBtn: {
+      width: "80%",
+      backgroundColor: "dodgerblue",
+      alignItems: "center",
+      padding: 12,
+      marginTop: 4,
+      marginBottom: 4,
+      borderRadius: 10
+    },
+    menuBtnText: {
+      fontSize: 16,
+      fontFamily: "monospace"
+    },
     main: {
       flex: 1,
       justifyContent: "space-between",
