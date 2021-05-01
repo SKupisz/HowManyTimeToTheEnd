@@ -35,7 +35,11 @@ export default class UserOwnDates extends React.Component{
         }, () => {});
     }
     newDate(event,dateValue){
-        let operand = dateValue.getTime();
+        if(event.type === "dismissed"){
+            this.changeDateState(0);
+        }
+        else{
+            let operand = dateValue.getTime();
         let helper = this.state.currentOwnList;
         let newDateId = -1;
         this.data.transaction(tx => {
@@ -60,6 +64,7 @@ export default class UserOwnDates extends React.Component{
                 () => console.log("error: no ID for this date found")
             );
         });
+        }
     }
     setTheDate(text){
         this.setState({
