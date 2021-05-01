@@ -135,6 +135,9 @@ export default function App() {
     insertingMenuBtnText: {
       fontFamily: "monospace",
       fontSize: 14,
+    },
+    mainMenuOfUser: {
+      marginBottom: 9
     }
   });
   return (

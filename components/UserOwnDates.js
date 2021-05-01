@@ -1,7 +1,7 @@
 import React from "react";
 import {View, Text, Pressable, TextInput} from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {openDatabase} from "expo-sqlite";
 
 export default class UserOwnDates extends React.Component{
     constructor(props){
@@ -17,49 +17,39 @@ export default class UserOwnDates extends React.Component{
             currentOwnList: []
         };
 
-        this.data = require("./dates.json");
-        this.atTheBeginning = this.atTheBeginning.bind(this);
+        this.data = openDatabase("db");
+        this.proccessDatabaseData = this.proccessDatabaseData.bind(this);
         this.newDate = this.newDate.bind(this);
         this.changeDateState = this.changeDateState.bind(this);
         this.setTheDate = this.setTheDate.bind(this);
-        this.insertTheData = this.insertTheData.bind(this);
         this.runNewUserDate = this.runNewUserDate.bind(this);
         this.checkHowManyLeft = this.checkHowManyLeft.bind(this);
     }
-    async atTheBeginning(){
-        const getTheDates = await AsyncStorage.getItem("@currentValues");
-        if(getTheDates !== null){
-            this.setState({
-                currentOwnList: getTheDates
-            }, () => {});
-        }
+    proccessDatabaseData(gottenData){
+        let helper = gottenData.map(elem => {return [elem["dateName"],elem["time"]];});
+        let operand = this.state.currentOwnList;
+        operand = operand.concat(helper);
+        this.setState({
+            currentOwnList: operand
+        }, () => {});
     }
     newDate(event,dateValue){
         let operand = dateValue.getTime();
         let helper = this.state.currentOwnList;
         helper.push([this.state.newDateName,operand]);
+        this.data.transaction(tx => {
+            let query = "insert into UserDates values (null, '"+this.state.newDateName+"', "+operand+");"
+            tx.executeSql(
+                query,
+                [],
+                () => {console.log("success")},
+                (err) => console.log("error",err)
+            );
+        });
         this.setState({
             currentOwnList: helper,
             newDateState: 0
-        }, () => {console.log(this.state.currentOwnList)});
-        //this.insertTheData(this.state.newDateName,operand);
-    }
-    async insertTheData(name,time){
-        let value = await AsyncStorage.getItem("@currentValues");
-        if(value === null){
-            let newTable = [[name,time]];
-            await AsyncStorage.setItem("@currentValues",newTable);
-            this.setState({
-                currentOwnList: newTable
-            }, () => {this.changeDateState(0)});
-        }
-        else{
-            value.push([name,time]);
-            await AsyncStorage.setItem("@currentValues",value);
-            this.setState({
-                currentOwnList: value
-            }, () => {this.changeDateState(0)});
-        }
+        }, () => {});
     }
     setTheDate(text){
         this.setState({
@@ -105,10 +95,24 @@ export default class UserOwnDates extends React.Component{
     }
     componentDidMount(){
         //this.atTheBeginning();
+        this.data.transaction(tx => {
+            tx.executeSql(
+                "create table if not exists UserDates (id integer primary key not null, dateName text, time int);",
+                [],
+                () => {console.log("success with creating database")},
+                () => console.log("database creating error")
+            );
+            tx.executeSql(
+                "select * from UserDates",
+                [],
+                (_, {rows: {_array}}) => this.proccessDatabaseData(_array),
+                () => console.log("error")
+            );
+        });
     }
     render(){
         return <View>
-            <View>
+            <View style = {this.props.styles["mainMenuOfUser"]}>
                 {this.state.newDateState === 0 ?                 
                 <Pressable style = {this.props.styles["choosingBtn"]} onPress = {() => {this.changeDateState(1)}}>
                     <Text style = {this.props.styles["choosingBtnText"]}>Nowa data</Text>
@@ -130,11 +134,13 @@ export default class UserOwnDates extends React.Component{
                 <DateTimePicker display = "default" is24hour={true} value = {new Date()} onChange = {(event,dateValue) => {this.newDate(event,dateValue)}}/>}
             </View>
             <View style = {this.props.styles["main"]}>
-                {this.state.currentOwnList.length !== 0 ? this.state.currentOwnList.map((name,ind) => {
+                {this.state.currentOwnList.length !== 0 && this.state.currentIndex === -1 ? this.state.currentOwnList.map((name,ind) => {
                 return <Pressable key = {"keyNR"+ind} onPress ={() => {this.runNewUserDate(ind)}} style = {this.props.styles["choosingBtn"]}>
                 <Text style = {this.props.styles["choosingBtnText"]}>{name[0]}</Text>
             </Pressable>;
-                }) : <Text></Text>}
+                }) : <Pressable style = {this.props.styles["choosingBtn"]} onPress = {() => {this.runNewUserDate(this.state.currentIndex)}}>
+                <Text style = {this.props.styles["choosingBtnText"]}>Wszystkie daty</Text>
+            </Pressable>}
 
             </View>
             <View style = {this.props.styles["content"]}>
