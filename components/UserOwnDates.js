@@ -24,9 +24,10 @@ export default class UserOwnDates extends React.Component{
         this.setTheDate = this.setTheDate.bind(this);
         this.runNewUserDate = this.runNewUserDate.bind(this);
         this.checkHowManyLeft = this.checkHowManyLeft.bind(this);
+        this.deleteCurrentDate = this.deleteCurrentDate.bind(this);
     }
     proccessDatabaseData(gottenData){
-        let helper = gottenData.map(elem => {return [elem["dateName"],elem["time"]];});
+        let helper = gottenData.map(elem => {return [elem["dateName"],elem["time"], elem["id"]];});
         let operand = this.state.currentOwnList;
         operand = operand.concat(helper);
         this.setState({
@@ -36,7 +37,7 @@ export default class UserOwnDates extends React.Component{
     newDate(event,dateValue){
         let operand = dateValue.getTime();
         let helper = this.state.currentOwnList;
-        helper.push([this.state.newDateName,operand]);
+        let newDateId = -1;
         this.data.transaction(tx => {
             let query = "insert into UserDates values (null, '"+this.state.newDateName+"', "+operand+");"
             tx.executeSql(
@@ -45,11 +46,20 @@ export default class UserOwnDates extends React.Component{
                 () => {console.log("success")},
                 (err) => console.log("error",err)
             );
+            tx.executeSql(
+                "select id from UserDates where dateName='"+this.state.newDateName+"' and time = "+operand+";",
+                [],
+                (_,{rows: {_array}}) => {
+                    newDateId = _array[0]["id"]; 
+                    helper.push([this.state.newDateName,operand, newDateId]);
+                    this.setState({
+                        currentOwnList: helper,
+                        newDateState: 0
+                    }, () => {});
+                },
+                () => console.log("error: no ID for this date found")
+            );
         });
-        this.setState({
-            currentOwnList: helper,
-            newDateState: 0
-        }, () => {});
     }
     setTheDate(text){
         this.setState({
@@ -92,6 +102,30 @@ export default class UserOwnDates extends React.Component{
             }
         }
 
+    }
+    deleteCurrentDate(){
+        if(this.state.currentIndex !== -1){
+            let helper = this.state.currentOwnList;
+            let getTheDeletedRow = helper.filter((elem,index) => {
+                return index === this.state.currentIndex;
+            });
+            helper = helper.filter((elem,index) => {
+                return index !== this.state.currentIndex;
+            });
+            this.data.transaction(tx => {
+                let query = "delete from UserDates where id = "+getTheDeletedRow[0][2]+";"
+                tx.executeSql(
+                    query,
+                    [],
+                    () => {console.log("deleting success")},
+                    () => {console.log(query, "error while deleting a row")}
+                );
+            });
+            this.setState({
+                currentIndex: -1,
+                currentOwnList: helper
+            }, () => {});
+        }
     }
     componentDidMount(){
         //this.atTheBeginning();
@@ -138,9 +172,14 @@ export default class UserOwnDates extends React.Component{
                 return <Pressable key = {"keyNR"+ind} onPress ={() => {this.runNewUserDate(ind)}} style = {this.props.styles["choosingBtn"]}>
                 <Text style = {this.props.styles["choosingBtnText"]}>{name[0]}</Text>
             </Pressable>;
-                }) : <Pressable style = {this.props.styles["choosingBtn"]} onPress = {() => {this.runNewUserDate(this.state.currentIndex)}}>
+                }) : this.state.currentOwnList.length !== 0 ? <View>
+            <Pressable style = {this.props.styles["choosingBtn"]} onPress = {() => {this.runNewUserDate(this.state.currentIndex)}}>
                 <Text style = {this.props.styles["choosingBtnText"]}>Wszystkie daty</Text>
-            </Pressable>}
+            </Pressable>
+            <Pressable style = {this.props.styles["choosingBtn"]} onPress = {() => {this.deleteCurrentDate()}}>
+                <Text style = {this.props.styles["choosingBtnText"]}>Usuń datę</Text>
+            </Pressable>
+            </View> : <Text></Text>}
 
             </View>
             <View style = {this.props.styles["content"]}>
