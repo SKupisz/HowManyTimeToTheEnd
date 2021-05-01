@@ -189,7 +189,7 @@ export default class UserOwnDates extends React.Component{
             </View>
             <View style = {this.props.styles["content"]}>
                 <Text>
-                    {this.state.currentTimeLeft === -1 ? <Text style = {this.props.styles["passedAway"]}>Już jest</Text>: this.state.currentIndex === -1 ? <Text></Text> : 
+                    {this.state.currentIndex === -1 ? <Text></Text>: this.state.currentTimeLeft === -1 ? <Text style = {this.props.styles["passedAway"]}>Już jest</Text> : 
                     <View style = {this.props.styles["timeStamps"]}>
                         <Text style = {this.props.styles["eventName"]}>{this.state.currentOwnList[this.state.currentIndex][0]}</Text>
                         <Text style = {this.props.styles["passedAway"]}>Zostało</Text>
